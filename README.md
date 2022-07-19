@@ -12,6 +12,6 @@ In order to make this configuration works:
 
 First time opening emacs, next elisp function must be executed:
 
-     ```
-     M-x all-the-icons-install-fonts RET
-     ```
+      ```
+      M-x all-the-icons-install-fonts RET
+      ```

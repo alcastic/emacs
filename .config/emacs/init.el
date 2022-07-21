@@ -41,6 +41,9 @@
   :config
   (which-key-mode))
 
+(use-package org
+  :ensure t)
+
 ; counsel flexible tools for minibuffer completion in Emacs. Its includes:
 ; - ivy: generic completion mechanism for Emacs.
 ; - counsel: a collection of ivy-enhanced versions of common Emacs commands.
@@ -50,6 +53,7 @@
   :config
   (ivy-mode 1)
   (bind-key "C-c C-r" 'ivy-resume))
+(global-set-key (kbd "C-`") 'recentf-open-files)
 (global-set-key (kbd "C-s") 'swiper-isearch)
 (global-set-key (kbd "M-x") 'counsel-M-x)
 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
@@ -60,9 +64,18 @@
 (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
 (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
 (global-set-key (kbd "<f2> j") 'counsel-set-variable)
+(global-set-key (kbd "C-x M-b") 'counsel-switch-buffer)
 (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
 (global-set-key (kbd "C-c v") 'ivy-push-view)
 (global-set-key (kbd "C-c V") 'ivy-pop-view)
+
+(use-package ivy-rich
+  :ensure t
+  :after (ivy)
+  :init
+  (setq ivy-rich-path-style 'abbrev
+        ivy-virtual-abbreviate 'full)
+  :config (ivy-rich-mode 1))
 
 ; text completition framework
 (use-package company
@@ -80,15 +93,29 @@
   :ensure t
   :init (global-flycheck-mode))
 
+; git client
+(use-package magit
+  :ensure t
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+; smart languaje code commenter
+(use-package evil-nerd-commenter
+  :bind ("M-/" . evilnc-comment-or-uncomment-lines))
+
 ; client for language server protocol. lsp-mode provides integration for company and flycheck
 (use-package lsp-mode
   :ensure t
-  :bind(:map lsp-mode-map
-	     ("C-c d" . lsp-describe-thing-at-point)
-	     ("C-c a" . lsp-executepcode-action)
-	     ("C-c l" . lsp-command-map))
+  :commands (lsp lsp-deferred)
+  :init
+  (setq lsp-keymap-prefix "C-c l")
   :config
   (lsp-enable-which-key-integration t))
+
+(use-package lsp-treemacs
+  :ensure t
+  :after lsp)
+(global-set-key [f8] 'treemacs)
 ;; --- emacs util packages - start --------------------------------------------------------
 
 
@@ -118,11 +145,6 @@
 (use-package all-the-icons
   :ensure t)
 
-(use-package neotree
-  :ensure t)
-(global-set-key [f8] 'neotree-toggle)
-(setq neo-theme (if (display-graphic-p) 'icons 'arrow))
-
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1))
@@ -136,6 +158,8 @@
   (load-theme 'doom-one t)           ; other great theme: doom-ayu-dark
   (doom-themes-visual-bell-config)   ; enable flashing mode-line on errors
   (doom-themes-org-config))          ; corrects (and improves) org-mode's native fontification.
+;; --- configure emacs aparience - start --------------------------------------------------
+
 
 (provide 'init)
 ;;; init.el ends here
